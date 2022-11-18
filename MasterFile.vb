@@ -1,7 +1,144 @@
-Sub Merge_CSV_Files()
-   'turn off screen Updating and alerts
+Sub RunRoutine()
+    'turn off screen Updating and alerts
     Application.DisplayAlerts = False
     Application.ScreenUpdating = False
+    
+    Merge_CSV_Files
+    Format_TCSS_Report
+
+    'turn on screen Updating and alerts
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
+End Sub
+
+Private Sub Format_TCSS_Report()
+    Dim LastRow As Long
+    Dim LastCol As Long
+    Dim NewCol As Long
+    Dim data_sheet As Worksheet
+    Set data_sheet = ThisWorkbook.Worksheets("Master")
+    
+    'Find last row
+    LastRow = data_sheet.UsedRange.Rows.Count
+          
+    'Insert New Columns
+    data_sheet.Range("A1").EntireColumn.Insert
+    data_sheet.Range("A1").Value = "SPWO"
+    data_sheet.Range("C1").EntireColumn.Insert
+    data_sheet.Range("C1").Value = "IMC"
+    data_sheet.Range("G1").EntireColumn.Insert
+    data_sheet.Range("G1").Value = "State"
+    
+    'Add formulas
+    data_sheet.Range("A2:A" & LastRow).Formula = "=D2&""/""&TEXT(E2,""000"")"
+    data_sheet.Range("C2:C" & LastRow).Formula = "=RIGHT(LEFT(D2,5),3)"
+    data_sheet.Range("G2:G" & LastRow).Formula = "=MID(H2,FIND(""("",H2)+1,FIND("")"",H2)-FIND(""("",H2)-1)"
+    
+    'Find last column and specify next column
+    LastCol = 21
+    NewCol = LastCol + 1
+    
+    'Fix up Requirement Date Column
+    For x = 2 To LastRow
+        data_sheet.Range(Cells(x, 14), Cells(x, 14)) = CDate(Replace(data_sheet.Range(Cells(x, 14), Cells(x, 14)), "Quote Required By ", ""))
+    Next
+    
+    'Add additional columns
+    data_sheet.Cells(1, NewCol) = "MAXPC"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=MAX(O2:S2)"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "TTD"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=N2-AA2"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "TBD"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=V2-N2"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "CIMS Status"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=XLOOKUP(A2,'CIMS ML'!A:A,'CIMS ML'!C:C)"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "Designer"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=XLOOKUP(A2,'CIMS ML'!A:A,'CIMS ML'!D:D)"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "RegDate"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=XLOOKUP(A2,'CIMS ML'!A:A,'CIMS ML'!B:B)"
+    NewCol = NewCol + 1
+    
+    data_sheet.Cells(1, NewCol) = "WorkType"
+    data_sheet.Range(Cells(2, NewCol), Cells(LastRow, NewCol)).Formula = "=XLOOKUP(A2,'CIMS ML'!A:A,'CIMS ML'!E:E)"
+    NewCol = NewCol + 1
+    
+    'Format Columns
+    data_sheet.Columns(23).NumberFormat = "#,##0"
+    data_sheet.Columns(24).NumberFormat = "#,##0"
+    data_sheet.Columns(27).NumberFormat = "dd/mm/yyyy"
+    
+    'Hide Columns4,5,6,12,13,16,17,18,19,20
+    data_sheet.Columns(4).Hidden = True
+    data_sheet.Columns(5).Hidden = True
+    data_sheet.Columns(6).Hidden = True
+    data_sheet.Columns(12).Hidden = True
+    data_sheet.Columns(13).Hidden = True
+    data_sheet.Columns(16).Hidden = True
+    data_sheet.Columns(17).Hidden = True
+    data_sheet.Columns(18).Hidden = True
+    data_sheet.Columns(19).Hidden = True
+    data_sheet.Columns(20).Hidden = True
+           
+    'Colour Columns
+    'Green (10092441) Columns A C G H K N
+    Columns("A").Interior.Color = 10092441
+    Columns("C").Interior.Color = 10092441
+    Columns("G").Interior.Color = 10092441
+    Columns("H").Interior.Color = 10092441
+    Columns("K").Interior.Color = 10092441
+    Columns("N").Interior.Color = 10092441
+    'Pink(16764159) Columns Y Z AA AB
+    Columns("Y").Interior.Color = 16764159
+    Columns("Z").Interior.Color = 16764159
+    Columns("AA").Interior.Color = 16764159
+    Columns("AB").Interior.Color = 16764159
+    
+    'Colour Cells by State
+    'QLD (16737945)
+    'WA/SA (13434879)
+    'VIC(5287936)
+    'TAS(3506772)
+    'NSW(15773696)
+    'NT (16764159)
+    
+    On Error Resume Next
+    For x = 2 To LastRow
+        If data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "NSW" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 15773696
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "NT" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 16764159
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "QLD" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 16737945
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "SA" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 13434879
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "TAS" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 3506772
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "VIC" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 5287936
+        ElseIf data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "WA" Then
+            data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 13434879
+        End If
+    Next
+On Error GoTo 0
+'Filter by released, returned and request for resubmit
+data_sheet.Range(Cells(2, 1), Cells(data_sheet.UsedRange.Rows.Count, data_sheet.UsedRange.Columns.Count)).AutoFilter Field:=11, Criteria1:=Array("Released", "Returned", "Request to Re-submit"), Operator:=xlFilterValues
+
+End Sub
+
+'Merge all CSV files that are in the same
+Private Sub Merge_CSV_Files()
+   
     
     Dim target_workbook As Workbook
     Dim data_sheet As Worksheet
@@ -18,9 +155,11 @@ Sub Merge_CSV_Files()
     If my_file = vbNullString Then
         MsgBox "CSV files not found.", vbInformation
     Else:
-        data_sheet.Cells.ClearContents
+        data_sheet.Cells.Clear
     End If
     
+    If data_sheet.FilterMode Then data_sheet.ShowAllData
+    data_sheet.Cells.EntireColumn.Hidden = False
     FirstBook = 0
     
     '// Step 2: Iterate CSV Files
@@ -56,9 +195,7 @@ Sub Merge_CSV_Files()
     
     Set data_sheet = Nothing
     
-    'turn on screen Updating and alerts
-    Application.ScreenUpdating = True
-    Application.DisplayAlerts = True
+
     
 End Sub
 
@@ -132,6 +269,8 @@ Function GetWorkbookPath(Optional wb As Workbook)
     End If
     
 End Function
+
+
 
 
 
