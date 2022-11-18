@@ -111,7 +111,6 @@ Private Sub Format_TCSS_Report()
     'TAS(3506772)
     'NSW(15773696)
     'NT (16764159)
-    
     On Error Resume Next
     For x = 2 To LastRow
         If data_sheet.Range(Cells(x, 7), Cells(x, 7)).Value = "NSW" Then
@@ -130,9 +129,22 @@ Private Sub Format_TCSS_Report()
             data_sheet.Range(Cells(x, 7), Cells(x, 7)).Interior.Color = 13434879
         End If
     Next
-On Error GoTo 0
-'Filter by released, returned and request for resubmit
-data_sheet.Range(Cells(2, 1), Cells(data_sheet.UsedRange.Rows.Count, data_sheet.UsedRange.Columns.Count)).AutoFilter Field:=11, Criteria1:=Array("Released", "Returned", "Request to Re-submit"), Operator:=xlFilterValues
+    On Error GoTo 0
+    
+    'Set Column sizes of Dates 14, 15, 21, 22, 27
+    data_sheet.Columns(1).ColumnWidth = 13
+    data_sheet.Columns(2).ColumnWidth = 8.5
+    data_sheet.Columns(3).ColumnWidth = 3.5
+    data_sheet.Columns(8).ColumnWidth = 35
+    data_sheet.Columns(14).ColumnWidth = 12
+    data_sheet.Columns(15).ColumnWidth = 12
+    data_sheet.Columns(21).ColumnWidth = 12
+    data_sheet.Columns(22).ColumnWidth = 12
+    data_sheet.Columns(27).ColumnWidth = 12
+    data_sheet.Columns(23).ColumnWidth = 12
+
+    'Filter by released, returned and request for resubmit
+    data_sheet.Range(Cells(1, 1), Cells(data_sheet.UsedRange.Rows.Count, data_sheet.UsedRange.Columns.Count)).AutoFilter Field:=11, Criteria1:=Array("Released", "Returned", "Request to Re-submit"), Operator:=xlFilterValues
 
 End Sub
 
@@ -152,14 +164,16 @@ Private Sub Merge_CSV_Files()
     my_file = Dir(folder_path & "*.csv")
     
     '// Step 1: Clear worksheet
+    
+    If data_sheet.FilterMode Then data_sheet.ShowAllData
+    data_sheet.Cells.EntireColumn.Hidden = False
+    
     If my_file = vbNullString Then
         MsgBox "CSV files not found.", vbInformation
     Else:
         data_sheet.Cells.Clear
     End If
     
-    If data_sheet.FilterMode Then data_sheet.ShowAllData
-    data_sheet.Cells.EntireColumn.Hidden = False
     FirstBook = 0
     
     '// Step 2: Iterate CSV Files
