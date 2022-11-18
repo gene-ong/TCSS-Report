@@ -25,7 +25,7 @@ Sub Merge_CSV_Files()
     
     '// Step 2: Iterate CSV Files
     Do While my_file <> vbNullString
-        Set target_workbook = Workbooks.Open(folder_path & my_file)
+        Set target_workbook = Workbooks.Open(folder_path & my_file, Local:=True)
             
         LastRow = data_sheet.Cells(Rows.Count, "A").End(xlUp).Row
         
@@ -33,7 +33,7 @@ Sub Merge_CSV_Files()
             target_workbook.Worksheets(1).Rows(1).Delete
         End If
         
-        target_workbook.Worksheets(1).Range("A1").CurrentRegion.Copy
+        target_workbook.Worksheets(1).UsedRange.Copy
         data_sheet.Cells(LastRow + 1, "A").PasteSpecial Paste:=xlPasteValues
         target_workbook.Close False
         
@@ -45,6 +45,15 @@ Sub Merge_CSV_Files()
     '// Step 3: Clean up
     data_sheet.Rows(1).Delete
     data_sheet.UsedRange.WrapText = False
+    
+    'Set format for date columns 12, 13, 14, 15, 16, 18
+    data_sheet.Columns(12).NumberFormat = "dd/mm/yyyy"
+    data_sheet.Columns(13).NumberFormat = "dd/mm/yyyy"
+    data_sheet.Columns(14).NumberFormat = "dd/mm/yyyy"
+    data_sheet.Columns(15).NumberFormat = "dd/mm/yyyy"
+    data_sheet.Columns(16).NumberFormat = "dd/mm/yyyy"
+    data_sheet.Columns(18).NumberFormat = "dd/mm/yyyy"
+    
     Set data_sheet = Nothing
     
     'turn on screen Updating and alerts
