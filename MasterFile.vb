@@ -5,7 +5,8 @@ Sub RunRoutine()
     
     Merge_CSV_Files
     Format_TCSS_Report
-
+    GenerateReportFile
+    
     'turn on screen Updating and alerts
     Application.ScreenUpdating = True
     Application.DisplayAlerts = True
@@ -285,6 +286,42 @@ Function GetWorkbookPath(Optional wb As Workbook)
 End Function
 
 
+Private Sub GenerateReportFile()
 
+    Dim wkbk1 As Workbook
+    Set wkbk1 = ActiveWorkbook
+    
+    'turn off screen Updating and alerts
+    Application.DisplayAlerts = False
+    Application.ScreenUpdating = False
+
+    'Set new workbook path from this workbook's path
+    Dim sFolderPath As String
+    sFolderPath = GetWorkbookPath & "/"
+    
+    'Save current workbook as new workbook
+    On Error Resume Next
+    wkbk1.SaveAs sFolderPath & "Report " & Format(Now, "DD-MM-YYYY HH_MM_SS")
+    On Error GoTo 0
+    
+	'Delete all unnecessary ranges and sheets
+    DeleteAllRanges
+    wkbk1.Sheets(1).Delete
+    wkbk1.Save
+    
+    'turn on screen Updating and alerts
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
+End Sub
+
+Private Sub DeleteAllRanges()
+
+Dim Range As Name
+For Each Range In ActiveWorkbook.Names
+    If Range.Visible Then Range.Delete
+Next Range
+
+End Sub
 
 
