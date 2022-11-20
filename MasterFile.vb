@@ -17,7 +17,7 @@ Private Sub Format_TCSS_Report()
     Dim LastCol As Long
     Dim NewCol As Long
     Dim data_sheet As Worksheet
-    Set data_sheet = ThisWorkbook.Worksheets("Master")
+    Set data_sheet = ThisWorkbook.Worksheets("TCSS Report")
     
     'Find last row
     LastRow = data_sheet.UsedRange.Rows.Count
@@ -157,7 +157,7 @@ Private Sub Merge_CSV_Files()
     Dim folder_path As String, my_file As String
     Dim LastRow As Long
     Dim FirstBook As Integer
-    Set data_sheet = ThisWorkbook.Worksheets("Master")
+    Set data_sheet = ThisWorkbook.Worksheets("TCSS Report")
     
     folder_path = GetWorkbookPath & "\"
     
