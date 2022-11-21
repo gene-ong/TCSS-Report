@@ -144,9 +144,12 @@ Private Sub Format_TCSS_Report()
     data_sheet.Columns(27).ColumnWidth = 12
     data_sheet.Columns(23).ColumnWidth = 12
 
+    'Sort on Column 14 (Requirement date)
+    data_sheet.Range(Cells(2, 1), Cells(data_sheet.UsedRange.Rows.Count, data_sheet.UsedRange.Columns.Count)).Sort Key1:=Range("N1"), Order1:=xlAscending
+
     'Filter by released, returned and request for resubmit
     data_sheet.Range(Cells(1, 1), Cells(data_sheet.UsedRange.Rows.Count, data_sheet.UsedRange.Columns.Count)).AutoFilter Field:=11, Criteria1:=Array("Released", "Returned", "Request to Re-submit"), Operator:=xlFilterValues
-
+    
 End Sub
 
 'Merge all CSV files that are in the same
@@ -304,7 +307,7 @@ Private Sub GenerateReportFile()
     wkbk1.SaveAs sFolderPath & "Report " & Format(Now, "DD-MM-YYYY HH_MM_SS")
     On Error GoTo 0
     
-	'Delete all unnecessary ranges and sheets
+    'Delete all unnecessary ranges and sheets
     DeleteAllRanges
     wkbk1.Sheets(1).Delete
     wkbk1.Save
